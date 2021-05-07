@@ -55,7 +55,7 @@ if not dSettings then
 	os.reboot()
 end
 -- new route function
-local function newRoute(oldRoutes)
+local function newRoute(oldRoutes,editName)
 	-- set variables
 	local routes = {} -- table made of route tables
 	local route = {} -- route table made with stops table, queued destin, and route name
@@ -65,10 +65,15 @@ local function newRoute(oldRoutes)
 	term.clear()
 	term.setCursorPos(1,1)
 	-- get the route name
-	print("What would you like to call this route?")
-	local routeName = read()
-	term.clear()
-	term.setCursorPos(1,1)
+	local routeName
+	if not editName then
+		print("What would you like to call this route?")
+		routeName = read()
+		term.clear()
+		term.setCursorPos(1,1)
+	else
+		routeName = editName
+	end
 	-- get number of stops
 	print("How many junctions/pass-throughs does the train go\nthrough to get to the stop?\n(including the stop)")
 	local numStops = tonumber(read())
@@ -171,6 +176,10 @@ elseif option == 0 then
 	settings.set("sRoutes", sRoutes)
 	settings.save(".settings")
 	os.reboot()
+elseif option == 2 then
+	local name = routes[userChoice]["routeName"]
+	table.remove(routes,userChoice)
+	newRoute(routes, name)
 else
 	-- print chosen destination
 	term.clear()
