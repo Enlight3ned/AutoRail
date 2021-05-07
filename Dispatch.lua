@@ -145,9 +145,12 @@ local function logic()
 		elseif key == keys.up then -- up arrow
 			userSet = userSet - 1 
 		elseif key == keys.enter then -- enter
-			return userSet
+			return userSet, 1
+		elseif key == keys.backspace then -- delete a route
+			return userSet, 0
+		elseif key == keys.e then -- edit a route
+			return userSet, 2
 		end
-		
 		if userSet > #routes + 1 then
 			userSet = 1
 		elseif userSet < 1 then
@@ -156,11 +159,18 @@ local function logic()
 	end
 end
 
-local userChoice = logic()
+local userChoice, option = logic()
 local trainTag = {}
 local trainCargo
-if userChoice == #routes + 1 then
+-- what to do with userChoice
+if userChoice == #routes + 1 and option == 1 then
 	newRoute(routes)
+elseif option == 0 then
+	table.remove(routes,userChoice)
+	local sRoutes = s.serializeRec(routes)
+	settings.set("sRoutes", sRoutes)
+	settings.save(".settings")
+	os.reboot()
 else
 	-- print chosen destination
 	term.clear()
