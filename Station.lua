@@ -1,21 +1,5 @@
 term.clear()
 term.setCursorPos(1,1)
-local display = peripheral.wrap("right")
-local speaker = peripheral.wrap("bottom")
-display.clear()
-local modem = peripheral.wrap("top")
-modem.open(os.getComputerID())
-modem.open(65535) -- rednet broadcast channel
-local function displayWrite(y,color,s)
-	local x,_ = display.getCursorPos()
-	display.setCursorPos(x,y)
-	display.setTextColor(color)
-	display.write(s)
-end
-local function clearLine(y)
-	display.setCursorPos(1,y)
-	display.clearLine()
-end
 local sSettings = settings.get("sSettings")
 
 if not sSettings then
@@ -31,13 +15,39 @@ if not sSettings then
 		local platformID = tonumber(read())
 		platformIDs[i] = platformID
 	end
+	print("On what side is the display?")
+	local displaySide = read()
+	print("On what side is the Speaker?")
+	local speakerSide = read()
 	term.clear()
 	term.setCursorPos(1,1)
-	settings.set("sSettings", {platformIDs = platformIDs, stationName = stationName})
+	print("On what side is the modem?")
+	local modemSide = read()
+	-- save stuff
+	term.clear()
+	term.setCursorPos(1,1)
+	settings.set("sSettings", {platformIDs = platformIDs, stationName = stationName, displaySide = displaySide, speakerSide = speakerSide, modemSide = modemSide})
 	settings.save(".settings")
 	os.reboot()
 end
+-- display stuff
+local display = peripheral.wrap(sSettings["displaySide"])
+local function displayWrite(y,color,s)
+	local x,_ = display.getCursorPos()
+	display.setCursorPos(x,y)
+	display.setTextColor(color)
+	display.write(s)
+end
+local function clearLine(y)
+	display.setCursorPos(1,y)
+	display.clearLine()
+end
+display.clear()
 
+local speaker = peripheral.wrap(sSettings["speakerSide"])
+local modem = peripheral.wrap(sSettings["modemSide"])
+modem.open(os.getComputerID())
+modem.open(65535) -- rednet broadcast channel
 local function infoReceive()
 	local timerID = os.startTimer(10)
 	local event,_,_,id,message,distance = os.pullEvent()
