@@ -126,7 +126,7 @@ end
 -- draw screen
 while true do
 	stationTimeCheck()
-	local test = infoInterpret()
+	local _,bool = infoInterpret()
 	display.clear()
 	term.clear()
 	term.setCursorPos(1,1)
@@ -141,7 +141,7 @@ while true do
 		displayWrite(i, colors.orange, calcETA(timeTable[i]["incomeTrainAdded"], timeTable[i]["incomeTrainETA"]).."min")
 	end
 
-	if test then notify() end
+	if bool == true then notify() end
 
 	display.setCursorPos(1,#timeTable+1)
 	displayWrite(#timeTable+1, colors.white,string.rep("\152",30))
